@@ -291,20 +291,10 @@ int CTicTacToeDlg::CheckReady()
 	{
 		switch (level_a)
 		{
-		//case 0: m_levelA = 1; break;
 		case 0: m_levelA = 3; break;
 		case 1: m_levelA = 5; break;
-		//case 3: m_levelA = 7; break;
 		}
-		/*
-		switch (level_b)
-		{
-		case 0: m_levelB = 2; break;
-		case 1: m_levelB = 4; break;
-		case 2: m_levelB = 7; break;
-		case 3: m_levelB = 8; break;
-		}
-		*/
+
 		return 1;
 	}
 }
@@ -312,16 +302,10 @@ int CTicTacToeDlg::CheckReady()
 void CTicTacToeDlg::SetGame()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	//m_comboA.AddString(L"Level 1");
+
 	m_comboA.AddString(L"Level 3");
 	m_comboA.AddString(L"Level 5");
-	//m_comboA.AddString(L"Level 7");
-	/*
-	m_comboB.AddString(L"Level 2");
-	m_comboB.AddString(L"Level 4");
-	m_comboB.AddString(L"Level 6");
-	m_comboB.AddString(L"Level 8");
-	*/
+
 	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"<게임 트리>");
 	//GetDlgItem(IDC_EDIT_B)->SetWindowTextW(L"<게임 트리>");
 
@@ -342,59 +326,51 @@ void CTicTacToeDlg::StartGame()
 
 	checkErr = CheckReady();	/* 게임을 시작할 준비 되었는지 검사 */
 	
-	//if(checkErr == 1)
 	if (checkErr == -1)	/* 레벨 설정이 안되어있을때 오류 출력 */
 	{
 		MessageBox(L"ERROR : LA-Level 설정을 확인하세요!", L"Error!", MB_ICONERROR);		
-	}/* 리턴값이 1이면 준비 완료 */
+	}
 	else{
 		if (m_isLoad != 0)			/* 불러온 게임이라면, */
 		{						/* 불러온 게임 정보로 보드판 초기화 */
 			m_board.InitBoard(m_startCom, m_isLoad, m_levelA);
-			// m_board.InitBoard(m_startCom, m_isLoad, m_levelA, m_levelB);
 			m_isLoad = 0;
 		}
 		else
 			m_board.InitBoard(m_startCom, 0, m_levelA);
-			//m_board.InitBoard(m_startCom, 0, m_levelA, m_levelB);	/* 아니라면, 새로운 판으로 초기화 */
+			/* 아니라면, 새로운 판으로 초기화 */
 
 		UpdateGame();
 		m_board.state = GameBoard::STATE_PLAY;						/* 보드판 상태를 플레이 중으로 변경 */
 
-		while (m_board.state == GameBoard::STATE_PLAY)		/* 게임 중이라면 */
-		{
-			TicTacToeAI* tttAI = new TicTacToeAI(m_board);	/* 새로운 AI 객체를 생성 */
-
-			tttAI->GetBestMove();							/* 최적의 좌표를 구함 */
-			m_board.DoMove(tttAI->bestX, tttAI->bestY);		/* 해당 좌표에 수를 둠 */
-
-			Node* node = tttAI->GetRootNode();			/* 최적의 좌표를 구하는동안 저장한 트리 중 루트노드 반환 */
-			this->PrintTreeNode(node);					/* 트리 출력 */
-
-			UpdateGame();							/* 게임판 업데이트 */
-
-			while (WaitUndo())							/* 무르기 기다림 */
-			{
-				m_board.RandomMove();	/* 남아있는 좌표중 랜덤한 곳으로 수를 둠 */
-				UpdateGame();						/* 게임판 업데이트 */
-			}
-
-			delete tttAI;
-			delete node;
-
-			m_board.CheckState();			/* 게임판 상태를 점검 */
-			if (m_board.state != GameBoard::STATE_PLAY)
-				EndGame();					/* 플레이 중이 아닌 상태면 게임 종료 */
-		}
-		UpdateGame();	/* 상대방 보드판에도 출력 */
 	}
-	
-	//else if (checkErr == -1)	/* 레벨 설정이 안되어있을때 오류 출력 */
-	//{
-	//	MessageBox(L"ERROR : LA-Level 설정을 확인하세요!", L"Error!", MB_ICONERROR);
-	//}
-	//else					/* 시작 순서 설정이 안되어있을때 오류 출력 */
-		//MessageBox(L"ERROR : 시작순서 설정을 확인하세요!", L"Error!", MB_ICONERROR);
+
+}
+
+void CTicTacToeDlg::TurnAI()
+{
+	TicTacToeAI* tttAI = new TicTacToeAI(m_board);	/* 새로운 AI 객체를 생성 */
+
+	tttAI->GetBestMove();							/* 최적의 좌표를 구함 */
+	m_board.DoMove(tttAI->bestX, tttAI->bestY);		/* 해당 좌표에 수를 둠 */
+
+	Node* node = tttAI->GetRootNode();			/* 최적의 좌표를 구하는동안 저장한 트리 중 루트노드 반환 */
+	this->PrintTreeNode(node);					/* 트리 출력 */
+
+	UpdateGame();							/* 게임판 업데이트 */
+
+	while (WaitUndo())							/* 무르기 기다림 */
+	{
+		m_board.RandomMove();	/* 남아있는 좌표중 랜덤한 곳으로 수를 둠 */
+		UpdateGame();						/* 게임판 업데이트 */
+	}
+
+	delete tttAI;
+	delete node;
+
+	//m_board.CheckState();			/* 게임판 상태를 점검 */
+	//if (m_board.state != GameBoard::STATE_PLAY)
+	//	EndGame();					/* 플레이 중이 아닌 상태면 게임 종료 */
 }
 
 /**
@@ -448,29 +424,25 @@ void CTicTacToeDlg::PrintTreeNode(Node* root)
 	}
 	temp = temp + (L")");
 
-	if (m_board.moveCnt % 2 == 1)
+	if (m_board.moveCnt % 2 == 0)
 	{
 		if (m_board.starterCom == 'X')
 		{
 			GetDlgItem(IDC_EDIT_A)->SetWindowTextW(temp);
-			//GetDlgItem(IDC_EDIT_B)->SetWindowTextW(L"<게임 트리>");
 		}
 		else
 		{
 			GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"<게임 트리>");
-			//GetDlgItem(IDC_EDIT_B)->SetWindowTextW(temp);
 		}
 	}
 	else
 	{
 		if (m_board.starterCom == 'X')
 		{
-			//GetDlgItem(IDC_EDIT_B)->SetWindowTextW(temp);
 			GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"<게임 트리>");
 		}
 		else
 		{
-			//GetDlgItem(IDC_EDIT_B)->SetWindowTextW(L"<게임 트리>");
 			GetDlgItem(IDC_EDIT_A)->SetWindowTextW(temp);
 		}
 	}
@@ -486,7 +458,7 @@ void CTicTacToeDlg::ResetGame()
 	CString tempStr, str;
 	int count = 0;
 
-	m_startCom = 0;
+	m_startCom = -1;
 	UpdateData(FALSE);
 
 	m_board.state = GameBoard::STATE_INIT;
@@ -498,8 +470,8 @@ void CTicTacToeDlg::ResetGame()
 		for (int j = 0; j<4; j++)
 		{
 			str.Format(L"%d", count + 1);
-			SetDlgItemText(1001 + count, str);
-			SetDlgItemText(1011 + count, str);
+			SetDlgItemText(1042 + count, str);
+			SetDlgItemText(1058 + count, str);
 			count++;
 		}
 	}
@@ -562,7 +534,7 @@ int CTicTacToeDlg::WaitUndo()
 	DWORD dwStart;
 	dwStart = GetTickCount();
 
-	if (m_board.moveCnt % 2 == 1)
+	if (m_board.moveCnt % 2 == 0)
 	{
 		if (m_board.starterCom == 'X')
 		{
@@ -620,16 +592,16 @@ void CTicTacToeDlg::UpdateGame()
 	if (m_board.moveCnt % 2 == 1)
 	{
 		if (m_board.starterCom == 'X')
-			comButton = IDC_A23;
-		else
 			comButton = IDC_A39;
+		else
+			comButton = IDC_A23;
 	}
 	else
 	{
 		if (m_board.starterCom == 'X')
-			comButton = IDC_A39;
-		else
 			comButton = IDC_A23;
+		else
+			comButton = IDC_A39;
 	}
 
 	for (int i = 0; i<4; i++)
@@ -747,19 +719,62 @@ void CTicTacToeDlg::LoadGame()
 
 void CTicTacToeDlg::OnBnClickedA39()
 {
+	m_board.DoMove(0, 0);
+	UpdateGame();
+
+	m_board.CheckState();			/* 게임판 상태를 점검 */
+	
+	if (m_board.state != GameBoard::STATE_PLAY) 
+	{
+		UpdateGame();
+		EndGame();
+	}
+	else
+	{
+		TurnAI();
+		//UpdateGame();
+	}
 	// TODO: Add your control notification handler code here
 }
 
 
 void CTicTacToeDlg::OnBnClickedA40()
 {
-	// TODO: Add your control notification handler code here
+	m_board.DoMove(0, 1);
+	UpdateGame();
+
+	m_board.CheckState();			/* 게임판 상태를 점검 */
+
+	if (m_board.state != GameBoard::STATE_PLAY)
+	{
+		UpdateGame();
+		EndGame();
+	}
+	else
+	{
+		TurnAI();
+		//UpdateGame();
+	}
 }
 
 
 void CTicTacToeDlg::OnBnClickedA41()
 {
-	// TODO: Add your control notification handler code here
+	m_board.DoMove(0, 2);
+	UpdateGame();
+
+	m_board.CheckState();			/* 게임판 상태를 점검 */
+
+	if (m_board.state != GameBoard::STATE_PLAY)
+	{
+		UpdateGame();
+		EndGame();
+	}
+	else
+	{
+		TurnAI();
+		//UpdateGame();
+	}
 }
 
 

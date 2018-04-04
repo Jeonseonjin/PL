@@ -63,14 +63,14 @@ public:
 	void StartGame();			/* 게임 시작 */
 	void EndGame();				/* 게임 종료 */
 	void LoadGame();			/* 게임 불러오기 */
+	void TurnAI();
 
 	/*	사용자 지정 변수 */
 
 	GameBoard m_board;		/* 게임 보드 변수 */
 	int m_levelA;			/* 컴퓨터 A의 LA-level */
-	//int m_levelB;			/* 컴퓨터 B의 LA-level */
-	int m_startCom;			/* 시작하는 COM 종류 */
 	int m_isLoad;			/* 게임이 로드 된 건지 구분 */
+	int m_startCom;
 	int m_checkUndo;		/* 무르기를 했는지 여부 구분 */
 	//afx_msg void OnBnClickedA18();
 	//afx_msg void OnBnClickedA1();

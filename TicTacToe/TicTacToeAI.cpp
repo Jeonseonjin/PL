@@ -11,16 +11,18 @@ TicTacToeAI::TicTacToeAI(GameBoard board)
 	root = new Node;
 	InitNode(root, 0);
 
-	if(tttBoard.moveCnt % 2 == 0)
+	if(tttBoard.moveCnt % 2 == 1)
 	{
 		LAlevel = tttBoard.startLevel;
-		criterion = tttBoard.starterCom;
+		criterion = tttBoard.oppnentCom;
 	}
+	/* 사용자컴퓨터터터터터터ㅓㅌ == 레벨 안 따짐
 	else
 	{
 		LAlevel = tttBoard.oppLevel;
 		criterion = tttBoard.oppnentCom;
 	}
+	*/
 };
 
 /**

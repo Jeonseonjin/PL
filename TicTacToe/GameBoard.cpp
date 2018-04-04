@@ -66,19 +66,11 @@ int GameBoard::GetBoardStat()
 void GameBoard::InitBoard(int startCom, int movedCnt, int nlevelA) //, int nlevelB)
 {
 	moveCnt = movedCnt;		/* 몇번 째 수를 저장 */
-
-	if(startCom == 0)		/* 시작 컴퓨터와 컴퓨터 레벨을 설정 */
-	{	
+	if (startCom == 0)		/* 시작 컴퓨터와 컴퓨터 레벨을 설정 */
+	{
 		starterCom = 'X';		oppnentCom = 'O';
 		startLevel = nlevelA;	//oppLevel = nlevelB;			
 	}
-	else				
-	{
-		starterCom = 'O';		oppnentCom = 'X';
-		//startLevel = nlevelB;
-		oppLevel = nlevelA;
-	}
-
 	if(movedCnt == 0)		/* 불러온 게임인지 여부를 검사해서 보드판 초기화 */
 	{
 		for(int i=0; i<4; i++)
@@ -164,12 +156,12 @@ void GameBoard::CheckState()
 		{
 			if((board[i][0]=='X') && (board[i][1]=='X') && (board[i][2]=='X') && (board[i][3] == 'X'))
 			{
-				state = STATE_WINA;
+				state = STATE_WINB;
 				return;
 			}
 			if((board[i][0]=='O') && (board[i][1]=='O') && (board[i][2]=='O') && (board[i][3] == 'O'))
 			{
-				state = STATE_WINB;
+				state = STATE_WINA;
 				return;
 			}
 		}
@@ -177,12 +169,12 @@ void GameBoard::CheckState()
 		{
 			if((board[0][i]=='X') && (board[1][i]=='X') && (board[2][i]=='X') && (board[3][i] == 'X'))
 			{
-				state = STATE_WINA;
+				state = STATE_WINB;
 				return;
 			}
 			if((board[0][i]=='O') && (board[1][i]=='O') && (board[2][i]=='O') && (board[3][i] == 'O'))
 			{
-				state = STATE_WINB;
+				state = STATE_WINA;
 				return;
 			}
 		}
@@ -190,7 +182,7 @@ void GameBoard::CheckState()
 		
 	if((board[0][0]!=' ')&&(board[0][0]==board[1][1])&&(board[0][0]==board[2][2]) && (board[0][0] == board[3][3]))	/* 첫번째 대각선 검사 */
 	{
-		if(board[0][0]=='X')
+		if(board[0][0]=='O')
 		{
 			state = STATE_WINA;
 			return;
@@ -204,7 +196,7 @@ void GameBoard::CheckState()
 	
 	if((board[0][3]!=' ')&&(board[0][3]==board[1][2])&&(board[0][3]==board[2][1])&&(board[0][3] == board[3][0])) /* 두번째 대각선 검사 */
 	{
-		if(board[0][3]=='X')
+		if(board[0][3]=='O')
 		{
 			state = STATE_WINA;
 			return;
