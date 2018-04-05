@@ -218,6 +218,8 @@ void CTicTacToeDlg::OnBnClickedButtonExit()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	int conclusion;
+	
+	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L" ");
 
 	if (m_board.state == GameBoard::STATE_PLAY)
 	{
@@ -235,23 +237,29 @@ void CTicTacToeDlg::OnBnClickedButtonExit()
 void CTicTacToeDlg::OnBnClickedButtonUndoB()
 {
 	m_checkUndo = 1;
+	m_board.UndoMove();
+	m_board.UndoMove();
+	UpdateGame();
 }
 
 void CTicTacToeDlg::OnBnClickedButtonStart()
 {
 	StartGame();
+	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L" ");
 }
 
 void CTicTacToeDlg::OnBnClickedButtonInit()
 {
 	SaveGame();
 	//ResetGame();
+	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L" ");
 }
 
 void CTicTacToeDlg::OnBnClickedButtonLoad()
 {
 	LoadGame();
 	StartGame();
+	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L" ");
 }
 
 int CTicTacToeDlg::CheckReady()
@@ -281,6 +289,7 @@ void CTicTacToeDlg::SetGame()
 	m_comboA.AddString(L"Level 3");
 	m_comboA.AddString(L"Level 5");
 
+	m_comboA.SetCurSel(0);
 	GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"<게임 트리>");
 
 	m_levelA = 0;
@@ -307,7 +316,7 @@ void CTicTacToeDlg::StartGame()
 		if (m_isLoad != 0)			/* 불러온 게임이라면, */
 		{						/* 불러온 게임 정보로 보드판 초기화 */
 			m_board.InitBoard(m_startCom, m_isLoad, m_levelA);
-			m_isLoad = 0;
+			//m_isLoad = 0;
 		}
 		else {
 			m_board.InitBoard(m_startCom, 0, m_levelA);
@@ -462,14 +471,29 @@ void CTicTacToeDlg::EndGame()
 	{
 	case GameBoard::STATE_WINA:
 		GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"컴퓨터가 게임에서 이겼습니다.");
+		for (int i = 0; i < 16; i++)
+		{
+			GetDlgItem(IDC_A23 + i)->EnableWindow(FALSE);
+			GetDlgItem(IDC_A39 + i)->EnableWindow(FALSE);
+		}
 		break;
 
 	case GameBoard::STATE_WINB:
 		GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"사용자가 게임에서 이겼습니다.");
+		for (int i = 0; i < 16; i++)
+		{
+			GetDlgItem(IDC_A23 + i)->EnableWindow(FALSE);
+			GetDlgItem(IDC_A39 + i)->EnableWindow(FALSE);
+		}
 		break;
 
 	case GameBoard::STATE_DRAW:
 		GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"게임에 비겼습니다.");
+		for (int i = 0; i < 16; i++)
+		{
+			GetDlgItem(IDC_A23 + i)->EnableWindow(FALSE);
+			GetDlgItem(IDC_A39 + i)->EnableWindow(FALSE);
+		}
 		break;
 
 	case GameBoard::STATE_INIT:
@@ -478,62 +502,16 @@ void CTicTacToeDlg::EndGame()
 
 	case GameBoard::STATE_STOP:
 		GetDlgItem(IDC_EDIT_A)->SetWindowTextW(L"게임이 중단되었습니다.");
+		for (int i = 0; i < 16; i++)
+		{
+			GetDlgItem(IDC_A23 + i)->EnableWindow(FALSE);
+			GetDlgItem(IDC_A39 + i)->EnableWindow(FALSE);
+		}
 		break;
 	}
 	m_undoB.EnableWindow(FALSE);
 }
 
-/**
-함 수 : WaitUndo()
-기 능 : 컴퓨터가 수를 해당 좌표에 놓고 무르기를 하기까지 5초동안 기다리는
-함수. 무르기를 시전하면 1을 리턴하고 그렇지 않으면 0을 리턴
-*/
-int CTicTacToeDlg::WaitUndo()
-{
-	MSG msg;
-	DWORD dwStart;
-	dwStart = GetTickCount();
-
-	if (m_board.moveCnt % 2 == 0)
-	{
-		if (m_board.starterCom == 'X')
-		{
-			m_undoB.EnableWindow(FALSE);
-		}
-		else
-		{
-
-			m_undoB.EnableWindow(TRUE);
-		}
-	}
-	else
-	{
-		if (m_board.starterCom == 'X')
-		{
-			m_undoB.EnableWindow(TRUE);
-		}
-		else
-		{
-			m_undoB.EnableWindow(FALSE);
-		}
-	}
-
-	while (GetTickCount() - dwStart < 5000)
-	{
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			PreTranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		if (m_checkUndo == 1)		/* 무르기를 시전했다면 */
-		{
-			m_checkUndo = 0;		/* 체크값을 0으로 바꾼디 1을 반환 */
-			return 1;
-		}
-	}
-	return 0;						/* 아니라면, 0을 반환 */
-}
 
 /**
 함 수 : UpdateGame()
@@ -584,10 +562,18 @@ void CTicTacToeDlg::UpdateGame()
 				str.Format(L"%d", count + 1);
 				SetDlgItemText(IDC_A23 + count, str);
 				SetDlgItemText(IDC_A39 + count, str);
+				GetDlgItem(IDC_A23 + count)->EnableWindow(TRUE);
+				GetDlgItem(IDC_A39 + count)->EnableWindow(TRUE);
 			}
 			count++;
 		}
 	}
+	if(m_isLoad >= m_board.moveCnt)
+		GetDlgItem(IDC_BUTTON_UNDO_B)->EnableWindow(FALSE);
+	else if (m_board.moveCnt>=2)
+		GetDlgItem(IDC_BUTTON_UNDO_B)->EnableWindow(TRUE);
+	else
+		GetDlgItem(IDC_BUTTON_UNDO_B)->EnableWindow(FALSE);
 }
 
 /**
