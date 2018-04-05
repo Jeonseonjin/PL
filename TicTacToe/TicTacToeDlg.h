@@ -62,6 +62,7 @@ public:
 	void PrintTreeNode(Node* root);	/* eval 값 노드들을 출력 */
 	void StartGame();			/* 게임 시작 */
 	void EndGame();				/* 게임 종료 */
+	void SaveGame();			/* 게임 저장 */
 	void LoadGame();			/* 게임 불러오기 */
 	void TurnAI();
 

@@ -11,19 +11,12 @@ TicTacToeAI::TicTacToeAI(GameBoard board)
 	root = new Node;
 	InitNode(root, 0);
 
-	if(tttBoard.moveCnt % 2 == 1)
+	if (tttBoard.moveCnt % 2 == 1)
 	{
 		LAlevel = tttBoard.startLevel;
-		criterion = tttBoard.oppnentCom;
+		criterion = tttBoard.oppnentCom; // AI가 기준
 	}
-	/* 사용자컴퓨터터터터터터ㅓㅌ == 레벨 안 따짐
-	else
-	{
-		LAlevel = tttBoard.oppLevel;
-		criterion = tttBoard.oppnentCom;
-	}
-	*/
-};
+}
 
 /**
 	함 수 : InitNode(Node* node, int inDepth)
@@ -35,7 +28,7 @@ void TicTacToeAI::InitNode(Node* node, int inDepth)
 	node->eval = 0;
 	node->childCnt = 0;
 
-	for(int i=0; i<9; i++)
+	for(int i=0; i<16; i++)
 		node->next[i] = NULL;
 };
 
@@ -245,6 +238,7 @@ int TicTacToeAI::CheckSameBoard(char (*board1)[4], char (*board2)[4])
 /**
 	함 수 : GetPossibleMove(Position* iList)
 	기 능 : 현재 게임판에서 수를 둘때 둘수있는 곳의 좌표과, 총 개수를 구함
+	+ 대칭성을 검사해서, 검사시간(겹치는 경우 제외하고 계산하기 때문) 줄이기!!
 */
 int TicTacToeAI::GetPossibleMove(Position* iList)
 {
@@ -272,7 +266,7 @@ int TicTacToeAI::GetPossibleMove(Position* iList)
 						break;
 				}
 				
-				if(!check)				/* 아니라면, */
+				if(!check)				/* 아니라면, 0이 아니니까 1로 보고, if문은 check가 올라가기 전까지 무조건 도는 것*/
 				{
 					iList[iNum].x = i;		/* 현재 x좌표, y좌표 저장 */
 					iList[iNum].y = j;
@@ -307,7 +301,7 @@ int TicTacToeAI::CheckEnd()
 int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 {
 	char calBoard[4][4];
-	int eval = 0, k = 0;		
+	int eval = 0;		
 	int comA = 0, comB = 0;
 
 	tttBoard.CheckState();
@@ -315,7 +309,7 @@ int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 	{
 		if(tttBoard.state == GameBoard::STATE_WINA)
 		{
-			if(this->criterion == 'X')
+			if(this->criterion == 'O')
 				eval = 100 - root->depth;
 			else
 				eval = -100 + root->depth;
@@ -325,7 +319,7 @@ int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 		}
 		else if(tttBoard.state == GameBoard::STATE_WINB)
 		{
-			if(this->criterion == 'X')
+			if(this->criterion == 'O')
 				eval = -100 + root->depth;
 			else
 				eval = 100 - root->depth;
@@ -338,7 +332,8 @@ int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 	for(int i=0; i<4; i++)
 		for(int j=0; j<4; j++)
 			calBoard[i][j] = tttBoard.board[i][j];
-
+	//calBoard는 just 각 돌이 이길 수 있는 경우의 수 세기 위한 용
+		
 	/* 가로 4줄, 세로 4줄을 각각 X, O로 이길수있는 수를 계산 */
 	for(int i=0;i<4;i++)
 	{
@@ -346,22 +341,22 @@ int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 			(calBoard[i][1]=='X' || calBoard[i][1]==' ') && 
 			(calBoard[i][2]=='X' || calBoard[i][2]==' ') &&
 			(calBoard[i][3] == 'X' || calBoard[i][3] == ' '))
-			comA++;
+			comB++;
 		if( (calBoard[i][0]=='O' || calBoard[i][0]==' ') && 
 			(calBoard[i][1]=='O' || calBoard[i][1]==' ') && 
 			(calBoard[i][2]=='O' || calBoard[i][2]==' ') &&
 			(calBoard[i][3] == 'O' || calBoard[i][3] == ' '))
-			comB++;
+			comA++;
 		if( (calBoard[0][i]=='X' || calBoard[0][i]==' ') && 
 			(calBoard[1][i]=='X' || calBoard[1][i]==' ') && 
 			(calBoard[2][i]=='X' || calBoard[2][i]==' ') &&
 			(calBoard[3][i] == 'X' || calBoard[3][i] == ' '))
-			comA++;
+			comB++;
 		if( (calBoard[0][i]=='O' || calBoard[0][i]==' ') && 
 			(calBoard[1][i]=='O' || calBoard[1][i]==' ') && 
 			(calBoard[2][i]=='O' || calBoard[2][i]==' ') &&
 			(calBoard[3][i] == 'O' || calBoard[3][i] == ' '))
-			comB++;
+			comA++;
 	}
 	
 	/* 왼쪽, 오른쪽 대각선에서 이길수있는 수를 계산 */
@@ -369,28 +364,26 @@ int TicTacToeAI::EvaluateBoard(struct treeNode* root)
 		(calBoard[1][1]=='X' || calBoard[1][1]==' ') && 
 		(calBoard[2][2]=='X' || calBoard[2][2]==' ') &&
 		(calBoard[3][3] == 'X' || calBoard[3][3] == ' '))
-		comA++;
+		comB++;
 	if( (calBoard[0][0]=='O' || calBoard[0][0]==' ') && 
 		(calBoard[1][1]=='O' || calBoard[1][1]==' ') && 
 		(calBoard[2][2]=='O' || calBoard[2][2]==' ') &&
 		(calBoard[3][3] == 'O' || calBoard[3][3] == ' '))
-		comB++;
+		comA++;
 
 	if( (calBoard[0][3]=='X' || calBoard[0][3]==' ') && 
 		(calBoard[1][2]=='X' || calBoard[1][2]==' ') && 
 		(calBoard[2][1]=='X' || calBoard[2][1]==' ') &&
 		(calBoard[3][0] == 'X' || calBoard[3][0] == ' '))
-		comA++;
+		comB++;
 	if( (calBoard[0][3]=='O' || calBoard[0][3]==' ') && 
 		(calBoard[1][2]=='O' || calBoard[1][2]==' ') && 
 		(calBoard[2][1]=='O' || calBoard[2][1]==' ') &&
 		(calBoard[3][0] == 'O' || calBoard[3][0] == ' '))
-		comB++;
+		comA++;
 
-	/* 현재 AI기준이 컴퓨터 A인지 B인지에 따라 이길수있는 수를 계산해서 반환 */
-	if(criterion == 'X')
-		eval = comA-comB;
-	else
-		eval = comB-comA; 
+	/* 컴퓨터 경우 - 내 경우 */
+		eval = comA-comB; 
+
 	return eval;
 };

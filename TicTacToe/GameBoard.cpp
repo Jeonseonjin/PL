@@ -47,11 +47,10 @@ GameBoard::GameBoard(const GameBoard& copy)
 	starterCom = copy.starterCom;
 	oppnentCom = copy.oppnentCom;
 	startLevel = copy.startLevel;
-	oppLevel = copy.oppLevel;
 };
 
 /**
-	함 수 : GetBoardStat()
+	함 수 : fBoardStat()
 	기 능 : 게임판 상태 반환
 */
 int GameBoard::GetBoardStat()
@@ -62,6 +61,7 @@ int GameBoard::GetBoardStat()
 /**
 	함 수 : InitBoard(int startCom, int movedCnt, int nlevelA, int nlevelB)
 	기 능 : 초기화에 필요한 정보를 인자를 중심으로 게임판을 초기화해주는 함수
+	+ 새 게임 누르거나, Load했을 때 board를 깔아주는 함수!!!! :)
 */
 void GameBoard::InitBoard(int startCom, int movedCnt, int nlevelA) //, int nlevelB)
 {

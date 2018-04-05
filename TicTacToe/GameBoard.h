@@ -20,13 +20,12 @@ public :
 
 	int moveCnt;			/* 현재 수 개수 */
 	int	state;				/* 현재 게임판 상태 */
-	int	startLevel;			/* 게임을 시작한 컴퓨터 레벨 */
-	int	oppLevel;			/* 상대방 컴퓨터 레벨 */
-	char starterCom;		/* 게임을 시작한 컴퓨터 종류 */
-	char oppnentCom;		/* 상대방 컴퓨터 종류 */
+	int	startLevel;			/* 컴퓨터 레벨 */
+	char starterCom;		/* 나 */
+	char oppnentCom;		/* 컴퓨터 */
 
-	static const int STATE_WINA = 3;		/* 컴퓨터A가 이겼을 때 */
-	static const int STATE_WINB = 4;		/* 컴퓨터B가 이겼을 때 */
+	static const int STATE_WINA = 3;		/* 컴퓨터가 이겼을 때 */
+	static const int STATE_WINB = 4;		/* 내가 이겼을 때 */
 	static const int STATE_DRAW = 5;		/* 게임이 비겼을 때 */
 	static const int STATE_PLAY = 7;		/* 현재 게임 중 일 때 */
 	static const int STATE_INIT = 8;		/* 게임이 초기화된 상태 */
@@ -38,7 +37,6 @@ public :
 	GameBoard(const GameBoard& copy);		/* 게임판 클래스 복사 생성자 */	
 	int GetBoardStat();						/* 게임 판 현재 상태 얻기 */
 	void InitBoard(int startCom, int movedCnt, int nlevelA);
-	//void InitBoard(int startCom, int movedCnt, int nlevelA); // int nlevelB);	/* 게임판 초기화 */
 	void RandomMove();	/* 랜덤하게 수를 놓을 때 */
 	void DoMove(int x, int y);				/* 좌표를 입력 받아 수를 놓을 때 */
 	void UndoMove();						/* 놓았던 수 무르기 */
