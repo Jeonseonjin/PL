@@ -33,13 +33,13 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="InfixToPostfix.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="PostfixToIntermediate.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Interpreter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefixToPostfix.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +53,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="InfixToPostfix.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="PostfixToIntermediate.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Interpreter.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefixToPostfix.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

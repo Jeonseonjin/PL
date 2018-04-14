@@ -3,7 +3,7 @@
 // PostfixToIntermediate.h : 헤더 파일
 // 후위표기식을 중간 코드로 변환하는 class
 // 생성자 인자로 받는 list<CStringA>에는 형식에 맞게 후위표기식이 들어가 있다.
-// 에러 체크는 모두 InfixToPostfix(중위표기식->후위표기식) 에서 한다.
+// 에러 체크는 모두 PrefixToPostfix(중위표기식->후위표기식) 에서 한다.
 
 #pragma once
 #include "afxwin.h"

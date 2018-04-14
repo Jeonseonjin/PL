@@ -34,8 +34,8 @@
 #include <afxcontrolbars.h>     // MFC의 리본 및 컨트롤 막대 지원
 
 
-//InfixToPostfix class
-#include "InfixToPostfix.h" 
+//PrefixToPostfix class
+#include "PrefixToPostfix.h" 
 
 //PostfixToIntermediate class
 #include "PostfixToIntermediate.h"

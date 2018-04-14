@@ -1,9 +1,9 @@
-#include "InfixToPostfix.h"
+#include "PrefixtoPostfix.h"
 #include "stdafx.h"
 
 //생성자
-InfixToPostfix::InfixToPostfix(CString Infix_tmp){
-	Infix = new CStringA(Infix_tmp);
+PrefixtoPostfix::PrefixtoPostfix(CString Prefix_tmp){
+	Prefix = new CStringA(Prefix_tmp);
 
 	//에러 메세지 초기화
 	errnum_string[0] = "";
@@ -18,36 +18,36 @@ InfixToPostfix::InfixToPostfix(CString Infix_tmp){
 	oper[0] = "IF";
 	oper[1] = "MINUS";
 
-	if (Infix->GetLength() == 0){
-		Infix->AppendChar(' ');
+	if (Prefix->GetLength() == 0){
+		Prefix->AppendChar(' ');
 	}
 
 	//들어온 문자열 끝에 엔터 없으면 강제로 넣어준다.
-	if (Infix->GetAt(Infix->GetLength() - 1) != '\n'){
-		Infix->AppendChar('\n');
+	if (Prefix->GetAt(Prefix->GetLength() - 1) != '\n'){
+		Prefix->AppendChar('\n');
 	}
 
 	//연산자 주변에 공백 만들기
-	Infix->Replace("IF", " IF ");
-	Infix->Replace("MINUS", " MINUS ");
+	Prefix->Replace("IF", " IF ");
+	Prefix->Replace("MINUS", " MINUS ");
 
 	//문자열 길이 얻기
-	len = Infix->GetLength();
+	len = Prefix->GetLength();
 
 	//CString class를 char배열 처럼 사용
 	//세이브 파일 크기 만큼 버퍼 염	
-	tmpbuf = Infix->GetBuffer(len);
+	tmpbuf = Prefix->GetBuffer(len);
 
 	make_Postfix();
 }
 
 //소멸자
-InfixToPostfix::~InfixToPostfix(){
-	delete Infix;
+PrefixtoPostfix::~PrefixtoPostfix(){
+	delete Prefix;
 }
 
 //후위표기식으로 만드는 함수
-void InfixToPostfix::make_Postfix(){
+void PrefixtoPostfix::make_Postfix(){
 	int i = 0;
 	//임시 에러번호 (가장 첫 에러를 출력하기 위한)
 	int errnum_tmp;
@@ -151,15 +151,15 @@ void InfixToPostfix::make_Postfix(){
 }
 
 //에러메세지 출력, 출력후 errno=0로 만듬
-void InfixToPostfix::printerror(){
+void PrefixtoPostfix::printerror(){
 	message.Append(errnum_string[errnum]);
 	message.Append("\r\n");
 	errnum = 0;
 }
 
-//하나의 프로그램이 끝난후 부터 엔터혹은 입력받은 Infix의 끝일 경우 index를 리턴한다.
+//하나의 프로그램이 끝난후 부터 엔터혹은 입력받은 Prefix의 끝일 경우 index를 리턴한다.
 //만약 프로그램과 엔터 사이에 공백을 제외한 다른 문자가 있을경우 err 체크한다.
-int InfixToPostfix::check_err_after_program(int index){
+int PrefixtoPostfix::check_err_after_program(int index){
 	//개행문자가 나올때 까지 for문
 	if (index < len)
 	while (tmpbuf[index] != '\n' && (index != (len - 1))){
@@ -175,77 +175,19 @@ int InfixToPostfix::check_err_after_program(int index){
 
 //읽은 마지막 index 리턴 err시 해당 errnum 
 //열린 괄호인가?
-int InfixToPostfix::Is_open_parentheses(int index){
-	int i;
+int PrefixtoPostfix::Is_open_parentheses(int index){
+	int i, cnt = 0;
 	//이 식의 op
 	int this_op_num;
-	//seq 0: <term> 
-	//seq 1: <fun>
+	//seq 0: <fun> 
+	//seq 1: <term>
 	//seq 2: <term>
 	//seq 3: )
 	tmp_str.AppendChar(tmpbuf[index]);
-	//seq 0: <term> 
-	for (i = index + 1; i < len; i++){
 
-		//공백 넘기기
-		if (tmpbuf[i] == ' ' || tmpbuf[i] == '\t'){
-			continue;
-		}
-		//재귀적으로 호출
-		else if (tmpbuf[i] == '('){
-			i = Is_open_parentheses(i);
-			if (errnum){
-				return i;
-			}
-			i++;
-			break;
-		}
-		//변수 인지 확인
-		else if (isalpha(tmpbuf[i])){
-			i = Is_val(i);
-			if (errnum){
-				return i;
-			}
-			i++;
-			break;
-		}
-		//상수 인지 확인
-		else if (isdigit(tmpbuf[i])){
-			i = Is_con(i);
-			if (errnum){
-				return i;
-			}
-			i++;
-			break;
-		}
-		//마이너스 상수 인지 확인
-		else if (tmpbuf[i] == '-'){
-			i = Is_minus_con(i);
-			if (errnum){
-				return i;
-			}
-			i++;
-			break;
-		}
-		//잘못된 위치의 괄호
-		else if (tmpbuf[i] == ')'){
-			errnum = 2;
-			return i;
-		}
-		//잘못된 기호 들어옴
-		else{
-			errnum = 3;
-			return i;
-		}
-	}
-	//문장이 (나오고 끝남
-	if (i == len){
-		errnum = 2;
-		return i - 1;
-	}
 
-	//seq 1: <fun>
-	for (; i < len; i++){
+	//seq 0: <fun> 
+	for (i = index+1; i < len; i++){
 
 		//공백 넘기기
 		if (tmpbuf[i] == ' ' || tmpbuf[i] == '\t'){
@@ -259,6 +201,26 @@ int InfixToPostfix::Is_open_parentheses(int index){
 			i++;
 			//이 식의 op num 기록
 			this_op_num = current_opnum;
+			break;
+		}
+		//상수 인지 확인
+		else if (isdigit(tmpbuf[i])) {
+			i = Is_con(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			cnt++;
+			break;
+		}
+		//마이너스 상수 인지 확인
+		else if (tmpbuf[i] == '-') {
+			i = Is_minus_con(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			cnt++;
 			break;
 		}
 		//잘못된 위치의 괄호
@@ -275,12 +237,100 @@ int InfixToPostfix::Is_open_parentheses(int index){
 			return i;
 		}
 	}
+
+	//문장이 (나오고 끝남
+	if (i == len) {
+		errnum = 2;
+		return i - 1;
+	}
+
 	//term 안나오고 문장 끝
 	if (i == len){
 		errnum = 2;
 		return i - 1;
 	}
 	tmp_str.AppendChar(' ');
+
+	//seq 1: <term>
+	for (; i < len; i++) {
+
+		//공백 넘기기
+		if (tmpbuf[i] == ' ' || tmpbuf[i] == '\t') {
+			continue;
+		}
+		//재귀적으로 호출
+		else if (tmpbuf[i] == '(') {
+			i = Is_open_parentheses(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			break;
+		}
+		//변수 인지 확인
+		else if (isalpha(tmpbuf[i])) {
+			i = Is_val(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			break;
+		}
+		//상수 인지 확인
+		else if (isdigit(tmpbuf[i])) {
+			i = Is_con(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			cnt++;
+			break;
+		}
+		//마이너스 상수 인지 확인
+		else if (tmpbuf[i] == '-') {
+			i = Is_minus_con(i);
+			if (errnum) {
+				return i;
+			}
+			i++;
+			cnt++;
+			break;
+		}
+		// 연산자 나온건지 확인 -> error
+		/*else if (isalpha(tmpbuf[i])) {
+			if (i = Is_op(i)) {
+				if (errnum) {
+					return i;
+				}
+				errnum = 0;
+				return errnum;
+			}
+		}*/
+		//잘못된 위치의 괄호
+		else if (tmpbuf[i] == ')') {
+			errnum = 2;
+			return i;
+		}
+		//잘못된 기호 들어옴
+		else {
+			errnum = 3;
+			return i;
+		}
+	}
+	
+	//term 안나오고 문장 끝
+	if (i == len) {
+		errnum = 2;
+		return i - 1;
+	}
+	tmp_str.AppendChar(' ');
+	
+	// 이전에 상수만 2개 나오면 식 잘못됨
+	if (cnt == 2) {
+		errnum = 0;
+		return errnum;
+	}
+
 	//seq 2: <term>
 	for (; i < len; i++){
 
@@ -369,7 +419,7 @@ int InfixToPostfix::Is_open_parentheses(int index){
 //index에 문자 들어와야함
 //읽은 마지막 index 리턴 err시 해당 errnum 
 //변수인가?
-int InfixToPostfix::Is_val(int index){
+int PrefixtoPostfix::Is_val(int index){
 	//공백 나올때 까지 for문 돔
 	//또는 문장 끝 날때 까지 for문
 	for (; index < len; index++){
@@ -393,7 +443,7 @@ int InfixToPostfix::Is_val(int index){
 //index에 숫자 들어와야함
 //읽은 마지막 index 리턴 err시 해당 errnum 
 //상수인가?
-int InfixToPostfix::Is_con(int index){
+int PrefixtoPostfix::Is_con(int index){
 	//공백 나올때 까지 for문 돔
 	//또는 문장 끝 날때 까지 for문
 	for (; index < len; index++){
@@ -419,7 +469,7 @@ int InfixToPostfix::Is_con(int index){
 //index에 문자 들어와야함
 //읽은 마지막 index 리턴 err시 해당 errnum 
 //연산자 인가?
-int InfixToPostfix::Is_op(int index){
+int PrefixtoPostfix::Is_op(int index){
 	//연산자 맞으면 true 아니면 false
 	bool correct;
 	int i, j;
@@ -466,7 +516,7 @@ int InfixToPostfix::Is_op(int index){
 //index에 -들어와야함
 //읽은 마지막 index 리턴 err시 해당 errnum 
 //-로 시작되는 상수인가?
-int InfixToPostfix::Is_minus_con(int index){
+int PrefixtoPostfix::Is_minus_con(int index){
 	//-가 문장 끝 오는 것 방지하는 if문
 	tmp_str.AppendChar(tmpbuf[index]);
 	if (index + 1 < len){
@@ -490,12 +540,12 @@ int InfixToPostfix::Is_minus_con(int index){
 
 
 //올바른 식들 후위식으로 넘겨줌
-std::list<CStringA> InfixToPostfix::getPostfix(){
+std::list<CStringA> PrefixtoPostfix::getPostfix(){
 	return listofPostfix;
 }
 
 //오류 메세지 + 올바른 식의 후위표기식
-CString InfixToPostfix::getMessage_Postfix(){
+CString PrefixtoPostfix::getMessage_Postfix(){
 	CString tmptmp(message);
 	return tmptmp;
 }

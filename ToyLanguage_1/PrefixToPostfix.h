@@ -1,6 +1,6 @@
 
 
-// InfixToPostfix.h : 헤더 파일
+// PrefixToPostfix.h : 헤더 파일
 // 중위표기식을 후위표기식으로 변환하는 class
 
 #pragma once
@@ -8,11 +8,11 @@
 #include <list>
 
 
-class InfixToPostfix{
+class PrefixtoPostfix{
 private:
 
-	//Infix 가르킬 CStringA형 포인터
-	CStringA* Infix;
+	//Prefix 가르킬 CStringA형 포인터
+	CStringA* Prefix;
 	//CStringA를 char형 포인터 처럼 이용할때 필요한 char형 포인터
 	char* tmpbuf;
 	//문자열 길이 
@@ -81,9 +81,9 @@ private:
 
 public:
 	//생성자
-	InfixToPostfix(CString Infix_tmp);
+	PrefixtoPostfix(CString Prefix_tmp);
 	//소멸자
-	~InfixToPostfix();
+	~PrefixtoPostfix();
 	//올바른 식들 후위식으로 넘겨줌
 	std::list<CStringA> getPostfix();
 	//오류 메세지 + 올바른 식의 후위표기식

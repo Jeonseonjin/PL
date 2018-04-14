@@ -210,7 +210,7 @@ void CPL2Dlg::OnBnClickedButton2()
 
 
 	//불러올 경로 지정하기 위한 CFileDiaglog형 class 
-	CFileDialog fDlg(true, _T("txt"), _T("infix.txt"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T("텍스트파일(*.txt)|*.txt|"));
+	CFileDialog fDlg(true, _T("txt"), _T("Prefix.txt"), OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T("텍스트파일(*.txt)|*.txt|"));
 
 	//파일 경로를 불러오는 다이얼로그 호출
 	//정상적으로 파일 경로가 얻어 졌으면
@@ -315,8 +315,8 @@ void CPL2Dlg::OnBnClickedButton3()
 			load_intermediate = NULL;
 		}
 
-		//InfixToPostfix class생성
-		topostfix = new InfixToPostfix(expression_editbox);
+		//PrefixToPostfix class생성
+		topostfix = new PrefixtoPostfix(expression_editbox);
 		//임시tmp에 <표기법변환/중간코드>에 띄어줄 메세지 받어옴
 		CString tmp = topostfix->getMessage_Postfix();
 		//기존것 내용지우고 받아온 메세지 집어넣음
